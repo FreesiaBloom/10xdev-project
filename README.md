@@ -2,93 +2,71 @@
 
 A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
 
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Getting Started Locally](#getting-started-locally)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
+
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+- **Framework**: [Astro](https://astro.build/) 5
+- **UI Library**: [React](https://react.dev/) 19
+- **Language**: [TypeScript](https://www.typescriptlang.org/) 5
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) 4
+- **UI Components**: [Shadcn/ui](https://ui.shadcn.com/)
 
-## Prerequisites
+## Getting Started Locally
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+To get a local copy up and running, please follow these simple steps.
 
-## Getting Started
+### Prerequisites
 
-1. Clone the repository:
+- [Node.js](https://nodejs.org/) (v22.14.0 or higher is recommended. It is advisable to create a `.nvmrc` file to enforce the version.)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
+### Installation
 
-2. Install dependencies:
+1.  Clone the repository:
+    ```sh
+    git clone https://github.com/przeprogramowani/10x-astro-starter.git
+    cd 10x-astro-starter
+    ```
+2.  Install NPM packages:
+    ```sh
+    npm install
+    ```
 
-```bash
-npm install
-```
+### Running the application
 
-3. Run the development server:
-
-```bash
+```sh
 npm run dev
 ```
 
-4. Build for production:
-
-```bash
-npm run build
-```
+This will start the development server, and you can view the application at `http://localhost:4321`.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+In the project directory, you can run:
 
-## Project Structure
+- `npm run dev`: Runs the app in the development mode.
+- `npm run build`: Builds the app for production.
+- `npm run preview`: Starts a local server to preview the production build.
+- `npm run lint`: Lints the code using ESLint.
+- `npm run lint:fix`: Lints the code and automatically fixes issues.
+- `npm run format`: Formats the code using Prettier.
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+This project is a starter template designed to provide a solid foundation for building modern web applications with Astro and React. It comes pre-configured with a set of tools and conventions to ensure code quality, consistency, and a great developer experience. The main goal is to accelerate the setup process for new projects by providing a feature-rich, yet lean, starting point.
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+## Project Status
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
-
-### Cursor IDE
-
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
-
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+This is a starter template and is actively maintained. The current version is `0.0.1`. We welcome contributions and suggestions for improvement.
 
 ## License
 
-MIT
+Distributed under the MIT License. See `LICENSE` for more information.
