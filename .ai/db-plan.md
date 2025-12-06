@@ -35,8 +35,6 @@ CREATE TABLE flashcards (
     generation_id BIGINT NULL REFERENCES generations(id) ON DELETE SET NULL,
     front TEXT NOT NULL,
     back TEXT NOT NULL,
-    box_number INTEGER NOT NULL DEFAULT 1,
-    next_review_at TIMESTAMPTZ NOT NULL,
     source source_enum NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -98,9 +96,6 @@ Indexes are created to optimize query performance, especially for common query p
 ```sql
 -- Index to quickly fetch all flashcards for a specific user
 CREATE INDEX idx_flashcards_user_id ON flashcards(user_id);
-
--- Composite index to efficiently find flashcards due for review for a specific user
-CREATE INDEX idx_flashcards_user_id_next_review_at ON flashcards(user_id, next_review_at);
 
 -- Index to quickly find flashcards associated with a specific generation event
 CREATE INDEX idx_flashcards_generation_id ON flashcards(generation_id);
