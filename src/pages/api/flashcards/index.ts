@@ -1,8 +1,5 @@
 import type { APIRoute } from "astro";
-import {
-  CreateFlashcardsCommandSchema,
-  ListFlashcardsQuerySchema,
-} from "@/lib/validation/flashcard-schemas";
+import { CreateFlashcardsCommandSchema, ListFlashcardsQuerySchema } from "@/lib/validation/flashcard-schemas";
 import * as flashcardsService from "@/lib/services/flashcards-service";
 import { handleApiError } from "@/lib/errors";
 
