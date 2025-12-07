@@ -5,7 +5,6 @@ import { Toaster, toast } from "sonner";
 import { useFlashcardProposals } from "./hooks/useFlashcardProposals";
 import FlashcardProposalItem from "./FlashcardProposalItem";
 import type { FlashcardProposalViewModel } from "./hooks/useFlashcardProposals";
-import { supabase } from "@/db/supabase.client";
 
 interface ReviewFormProps {
   generationId: number;
@@ -28,13 +27,6 @@ export default function ReviewForm({ generationId }: ReviewFormProps) {
 
     setIsLoading(true);
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("Brak autoryzacji. Proszę się zalogować.");
-      }
-
       const command: CreateFlashcardsCommand = {
         flashcards: proposals.map((p) => ({
           front: p.front,
@@ -48,7 +40,6 @@ export default function ReviewForm({ generationId }: ReviewFormProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify(command),
       });
