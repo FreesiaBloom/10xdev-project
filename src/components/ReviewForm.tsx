@@ -26,6 +26,7 @@ export default function ReviewForm({ generationId }: ReviewFormProps) {
     if (proposals.length === 0) return;
 
     setIsLoading(true);
+    console.log(event);
     try {
       const command: CreateFlashcardsCommand = {
         flashcards: proposals.map((p) => ({

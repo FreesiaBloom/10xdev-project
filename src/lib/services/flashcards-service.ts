@@ -79,6 +79,7 @@ export class FlashcardService {
       next_review_at: new Date().toISOString(),
     }));
 
+    console.log(userId, flashcards, flashcardsToInsert);
     const { data, error } = await this.supabase.from("flashcards").insert(flashcardsToInsert).select();
 
     if (error) {

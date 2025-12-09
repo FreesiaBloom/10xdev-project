@@ -88,6 +88,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify(validationResult.error.flatten()), { status: 400 });
     }
 
+    console.log(DEFAULT_USER_ID, validationResult.data.flashcards);
     const createdFlashcards = await flashcardService.createFlashcards(
       DEFAULT_USER_ID,
       validationResult.data.flashcards
