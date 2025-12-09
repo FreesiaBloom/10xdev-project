@@ -1,7 +1,6 @@
 import { z } from "zod";
 import type { APIRoute } from "astro";
-import * as flashcardsService from "@/lib/services/flashcards-service";
-import { DatabaseError } from "@/lib/errors";
+import { FlashcardService, DatabaseError } from "@/lib/services/flashcards-service";
 import { DEFAULT_USER_ID } from "@/db/supabase.client";
 
 export const prerender = false;
@@ -44,6 +43,7 @@ export const CreateFlashcardsCommandSchema = z.object({
 
 export const GET: APIRoute = async ({ url, locals }) => {
   const { supabase } = locals;
+  const flashcardService = new FlashcardService(supabase);
 
   const queryParams = Object.fromEntries(url.searchParams.entries());
   const validationResult = ListFlashcardsQuerySchema.safeParse(queryParams);
@@ -53,7 +53,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
   }
 
   try {
-    const response = await flashcardsService.listFlashcards(supabase, DEFAULT_USER_ID, validationResult.data);
+    const response = await flashcardService.listFlashcards(DEFAULT_USER_ID, validationResult.data);
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -78,6 +78,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
 
 export const POST: APIRoute = async ({ request, locals }) => {
   const { supabase } = locals;
+  const flashcardService = new FlashcardService(supabase);
 
   try {
     const body = await request.json();
@@ -87,8 +88,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify(validationResult.error.flatten()), { status: 400 });
     }
 
-    const createdFlashcards = await flashcardsService.createFlashcards(
-      supabase,
+    const createdFlashcards = await flashcardService.createFlashcards(
       DEFAULT_USER_ID,
       validationResult.data.flashcards
     );

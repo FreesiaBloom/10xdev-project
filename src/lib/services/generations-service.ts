@@ -79,7 +79,7 @@ export class GenerationService {
         console.error("Failed to save generation record:", insertError);
         // We can proceed without a generation_id, but for consistency let's use a placeholder.
         return {
-          generation_id: -1, // Indicates a non-persisted generation
+          generation_id: 1, // Indicates a non-persisted generation
           flashcards_proposals: flashcardsProposals.map((p) => ({ ...p, source: "ai_generated" })),
           generated_count: flashcardsProposals.length,
         };
