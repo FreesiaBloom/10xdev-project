@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { GenerationService } from "@/lib/services/generations-service";
 import type { APIRoute } from "astro";
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 export const prerender = false;
 
@@ -11,18 +12,19 @@ const GenerateFlashcardsCommandSchema = z.object({
     .max(10000, "Source text must be at most 10000 characters long."),
 });
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request, locals, cookies }) => {
   try {
-    const { data: sessionData, error: sessionError } = await locals.supabase.auth.getSession();
-    if (sessionError || !sessionData.session) {
+    const session = locals.session;
+    if (!session) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
-    const userId = sessionData.session.user.id;
+    const userId = session.user.id;
 
     const body = await request.json();
     const command = GenerateFlashcardsCommandSchema.parse(body);
 
-    const generationService = new GenerationService(locals.supabase);
+    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+    const generationService = new GenerationService(supabase);
     const result = await generationService.generateFlashcards(command, userId);
 
     return new Response(JSON.stringify(result), { status: 201 });

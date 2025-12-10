@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { APIRoute } from "astro";
 import { FlashcardService, DatabaseError } from "@/lib/services/flashcards-service";
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 export const prerender = false;
 
@@ -41,8 +41,14 @@ export const CreateFlashcardsCommandSchema = z.object({
   flashcards: z.array(CreateFlashcardSchema).min(1, "At least one flashcard must be provided."),
 });
 
-export const GET: APIRoute = async ({ url, locals }) => {
-  const { supabase } = locals;
+export const GET: APIRoute = async ({ url, locals, cookies, request }) => {
+  const session = locals.session;
+  if (!session) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+  const userId = session.user.id;
+
+  const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
   const flashcardService = new FlashcardService(supabase);
 
   const queryParams = Object.fromEntries(url.searchParams.entries());
@@ -53,7 +59,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
   }
 
   try {
-    const response = await flashcardService.listFlashcards(DEFAULT_USER_ID, validationResult.data);
+    const response = await flashcardService.listFlashcards(userId, validationResult.data);
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -72,12 +78,19 @@ export const GET: APIRoute = async ({ url, locals }) => {
         }
       );
     }
-    throw error;
+    console.error("Error in GET /api/flashcards:", error);
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
   }
 };
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const { supabase } = locals;
+export const POST: APIRoute = async ({ request, locals, cookies }) => {
+  const session = locals.session;
+  if (!session) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+  const userId = session.user.id;
+
+  const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
   const flashcardService = new FlashcardService(supabase);
 
   try {
@@ -88,11 +101,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify(validationResult.error.flatten()), { status: 400 });
     }
 
-    console.log(DEFAULT_USER_ID, validationResult.data.flashcards);
-    const createdFlashcards = await flashcardService.createFlashcards(
-      DEFAULT_USER_ID,
-      validationResult.data.flashcards
-    );
+    const createdFlashcards = await flashcardService.createFlashcards(userId, validationResult.data.flashcards);
 
     return new Response(JSON.stringify({ flashcards: createdFlashcards }), {
       status: 201,
@@ -112,6 +121,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }
       );
     }
-    throw error;
+    console.error("Error in POST /api/flashcards:", error);
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
   }
 };

@@ -31,14 +31,14 @@ const isLoggedIn = session !== null;
               isLoggedIn ? (
                 <>
                   <li>
-                    <Button as="a" href="/generate" variant="ghost">
-                      Wygeneruj
-                    </Button>
+                    <a href="/generate">
+                      <Button variant="ghost">Wygeneruj</Button>
+                    </a>
                   </li>
                   <li>
-                    <Button as="a" href="/my-flashcards" variant="ghost">
-                      Moje fiszki
-                    </Button>
+                    <a href="/my-flashcards">
+                      <Button variant="ghost">Moje fiszki</Button>
+                    </a>
                   </li>
                   <li>
                     <LogoutButton client:load />
