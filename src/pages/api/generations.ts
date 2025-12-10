@@ -13,11 +13,17 @@ const GenerateFlashcardsCommandSchema = z.object({
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    const { data: sessionData, error: sessionError } = await locals.supabase.auth.getSession();
+    if (sessionError || !sessionData.session) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+    const userId = sessionData.session.user.id;
+
     const body = await request.json();
     const command = GenerateFlashcardsCommandSchema.parse(body);
 
     const generationService = new GenerationService(locals.supabase);
-    const result = await generationService.generateFlashcards(command);
+    const result = await generationService.generateFlashcards(command, userId);
 
     return new Response(JSON.stringify(result), { status: 201 });
   } catch (error) {

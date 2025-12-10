@@ -13,6 +13,8 @@ export default function GenerationForm() {
 
   const isValid = sourceText.length >= MIN_LENGTH && sourceText.length <= MAX_LENGTH;
 
+  console.log("OpenRouterService");
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isValid) return;

@@ -1,17 +1,29 @@
+import { z } from "zod";
 import type { SupabaseClient } from "../../db/supabase.client";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 import type {
   GenerateFlashcardsCommand,
   GenerateFlashcardsResponseDto,
   GeneratedFlashcardProposalDto,
 } from "../../types";
+import { OpenRouterService } from "./openrouter.service";
+
+const FlashcardProposalSchema = z.object({
+  front: z.string().describe("The question or term on the front of the flashcard."),
+  back: z.string().describe("The answer or definition on the back of the flashcard."),
+});
+
+const AiFlashcardsResponseSchema = z.object({
+  flashcards: z.array(FlashcardProposalSchema).min(1).describe("An array of generated flashcards."),
+});
 
 export class GenerationService {
   private supabase: SupabaseClient;
-  private readonly openRouterApiKey: string = import.meta.env.OPENROUTER_API_KEY;
+  private openRouterService: OpenRouterService;
+  private readonly model = "openai/gpt-4o-mini";
 
   constructor(supabase: SupabaseClient) {
     this.supabase = supabase;
+    this.openRouterService = new OpenRouterService();
   }
 
   private async generateHash(text: string): Promise<string> {
@@ -22,72 +34,47 @@ export class GenerationService {
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
-  public async generateFlashcards(command: GenerateFlashcardsCommand): Promise<GenerateFlashcardsResponseDto> {
+  public async generateFlashcards(
+    command: GenerateFlashcardsCommand,
+    userId: string
+  ): Promise<GenerateFlashcardsResponseDto> {
     const sourceTextHash = await this.generateHash(command.source_text);
 
     // TODO: Check if a generation with the same hash already exists to avoid duplicates.
-
     try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.openRouterApiKey}`,
-        },
-        body: JSON.stringify({
-          model: "google/gemma-2-9b-it",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a helpful assistant that generates flashcards from a given text. Each flashcard should have a 'front' (question) and a 'back' (answer). Provide the output in JSON format as an array of objects, where each object has 'front' and 'back' keys. Example: [{\"front\": \"What is the capital of Poland?\", \"back\": \"Warsaw\"}]",
-            },
-            { role: "user", content: command.source_text },
-          ],
-          response_format: { type: "json_object" },
-        }),
+      const startTime = Date.now();
+      const systemPrompt =
+        "You are a helpful assistant that generates flashcards from a given text. Each flashcard should have a 'front' (question) and a 'back' (answer). Provide the output in JSON format, following the requested schema precisely.";
+
+      const aiResponse = await this.openRouterService.generateStructuredResponse({
+        systemPrompt,
+        userPrompt: command.source_text,
+        responseSchema: AiFlashcardsResponseSchema,
+        model: this.model,
       });
 
-      if (!response.ok) {
-        const errorBody = await response.text();
-        // TODO: Log this error to the database in 'generation_error_logs'
-        throw new Error(`AI service request failed with status ${response.status}: ${errorBody}`);
-      }
+      const flashcardsProposals = aiResponse.flashcards;
 
-      const aiResponse = await response.json();
+      const generationId = await this.saveGenerationMetadata(
+        {
+          sourceText: command.source_text,
+          sourceTextHash,
+          generatedCount: flashcardsProposals.length,
+          durationMs: Date.now() - startTime,
+        },
+        userId
+      );
 
-      // The AI is expected to return a JSON object with a "flashcards" key, which is an array.
-      const flashcardsProposals: GeneratedFlashcardProposalDto[] = JSON.parse(
-        aiResponse.choices[0].message.content
-      ).flashcards;
+      console.log("generationId", generationId);
 
-      const { data: generation, error: insertError } = await this.supabase
-        .from("generations")
-        .insert({
-          user_id: DEFAULT_USER_ID,
-          model: "google/gemma-2-9b-it",
-          source_text_hash: sourceTextHash,
-          generated_count: flashcardsProposals.length,
-        })
-        .select()
-        .single();
-
-      if (insertError) {
-        // Even if DB insert fails, we don't want the user to lose the generated cards.
-        // We will log the DB error but still return the proposals.
-        // A more robust solution might involve a retry mechanism or a background job.
-        console.error("Failed to save generation record:", insertError);
-        // We can proceed without a generation_id, but for consistency let's use a placeholder.
-        return {
-          generation_id: 1, // Indicates a non-persisted generation
-          flashcards_proposals: flashcardsProposals.map((p) => ({ ...p, source: "ai_generated" })),
-          generated_count: flashcardsProposals.length,
-        };
-      }
+      const persistedProposals: GeneratedFlashcardProposalDto[] = flashcardsProposals.map((p) => ({
+        ...p,
+        source: "ai_generated",
+      }));
 
       return {
-        generation_id: generation.id,
-        flashcards_proposals: flashcardsProposals.map((p) => ({ ...p, source: "ai_generated" })),
+        generation_id: generationId,
+        flashcards_proposals: persistedProposals,
         generated_count: flashcardsProposals.length,
       };
     } catch (error) {
@@ -95,10 +82,10 @@ export class GenerationService {
 
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       const { error: logError } = await this.supabase.from("generation_error_logs").insert({
-        user_id: DEFAULT_USER_ID,
+        user_id: userId,
         source_text_hash: sourceTextHash,
         error_message: errorMessage,
-        model: "google/gemma-2-9b-it",
+        model: this.model,
       });
 
       if (logError) {
@@ -107,5 +94,31 @@ export class GenerationService {
 
       throw new Error("Failed to generate flashcards due to an AI service error.");
     }
+  }
+
+  private async saveGenerationMetadata(
+    data: {
+      sourceText: string;
+      sourceTextHash: string;
+      generatedCount: number;
+      durationMs: number;
+    },
+    userId: string
+  ): Promise<number> {
+    const { data: generation, error } = await this.supabase
+      .from("generations")
+      .insert({
+        user_id: userId,
+        source_text_hash: data.sourceTextHash,
+        source_text_length: data.sourceText.length,
+        generated_count: data.generatedCount,
+        generation_duration: data.durationMs,
+        model: this.model,
+      })
+      .select("id")
+      .single();
+
+    if (error) throw error;
+    return generation.id;
   }
 }
