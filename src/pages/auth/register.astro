@@ -1,0 +1,15 @@
+---
+import RegisterForm from "@/components/auth/RegisterForm";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="Rejestracja">
+  <main class="container flex min-h-screen items-center justify-center py-12">
+    <div class="flex w-full flex-col items-center gap-4">
+      <RegisterForm client:load />
+      <div class="text-center text-sm text-muted-foreground">
+        Masz już konto? <a href="/auth/login" class="underline">Zaloguj się</a>
+      </div>
+    </div>
+  </main>
+</Layout>

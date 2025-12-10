@@ -7,6 +7,7 @@ declare global {
   namespace App {
     interface Locals {
       supabase: SupabaseClient<Database>;
+      session: import("@supabase/supabase-js").Session | null;
     }
   }
 }
