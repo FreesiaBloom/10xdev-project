@@ -51,6 +51,7 @@ export default function GenerationForm() {
       <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-4">
         <div className="relative w-full">
           <Textarea
+            data-testid="source-text-area"
             value={sourceText}
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSourceText(e.target.value)}
             placeholder="Wklej tutaj swój tekst..."
@@ -58,12 +59,17 @@ export default function GenerationForm() {
             maxLength={MAX_LENGTH}
             disabled={isLoading}
           />
-          <p className="absolute bottom-2 right-2 text-sm text-muted-foreground">
+          <p data-testid="character-counter" className="absolute bottom-2 right-2 text-sm text-muted-foreground">
             {sourceText.length} / {MAX_LENGTH}
           </p>
         </div>
-        <Button type="submit" disabled={!isValid || isLoading} className="w-full max-w-xs">
-          {isLoading ? <span>Loading...</span> : "Generuj fiszki"}
+        <Button
+          data-testid="generate-button"
+          type="submit"
+          disabled={!isValid || isLoading}
+          className="w-full max-w-xs"
+        >
+          {isLoading ? <span data-testid="loading-spinner">Loading...</span> : "Generuj fiszki"}
         </Button>
       </form>
     </>
