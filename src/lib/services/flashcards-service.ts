@@ -1,16 +1,7 @@
 import { type SupabaseClient } from "@/db/supabase.client";
-import type { CreateFlashcardDto, FlashcardEntity, ListFlashcardsResponseDto } from "@/types";
+import type { CreateFlashcardDto, FlashcardEntity, ListFlashcardsResponseDto, UpdateFlashcardCommand } from "@/types";
+import { DatabaseError, RecordNotFoundError } from "@/lib/errors";
 
-export class DatabaseError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-    public readonly details: string
-  ) {
-    super(message);
-    this.name = "DatabaseError";
-  }
-}
 
 interface ListFlashcardsOptions {
   page: number;
@@ -87,5 +78,51 @@ export class FlashcardService {
     }
 
     return data as FlashcardEntity[];
+  }
+
+  /**
+   * Updates an existing flashcard for a specific user.
+   * @param userId - The ID of the user who owns the flashcard.
+   * @param flashcardId - The ID of the flashcard to update.
+   * @param data - The data to update.
+   * @returns A promise that resolves to the updated flashcard.
+   */
+  async updateFlashcard(userId: string, flashcardId: string, data: UpdateFlashcardCommand): Promise<FlashcardEntity> {
+    const { data: updatedFlashcard, error } = await this.supabase
+      .from("flashcards")
+      .update(data)
+      .eq("user_id", userId)
+      .eq("id", flashcardId)
+      .select()
+      .single();
+
+    if (error) {
+      throw new DatabaseError(error.message, error.code, error.details);
+    }
+    if (!updatedFlashcard) {
+      throw new RecordNotFoundError(`Flashcard with ID ${flashcardId} not found for this user.`);
+    }
+
+    return updatedFlashcard as FlashcardEntity;
+  }
+
+  /**
+   * Deletes a flashcard for a specific user.
+   * @param userId - The ID of the user who owns the flashcard.
+   * @param flashcardId - The ID of the flashcard to delete.
+   */
+  async deleteFlashcard(userId: string, flashcardId: string): Promise<void> {
+    const { error, count } = await this.supabase
+      .from("flashcards")
+      .delete({ count: "exact" })
+      .eq("user_id", userId)
+      .eq("id", flashcardId);
+
+    if (error) {
+      throw new DatabaseError(error.message, error.code, error.details);
+    }
+    if (count === 0) {
+      throw new RecordNotFoundError(`Flashcard with ID ${flashcardId} not found for this user.`);
+    }
   }
 }

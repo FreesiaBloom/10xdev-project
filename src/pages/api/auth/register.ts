@@ -12,7 +12,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
 
-    // W panelu Supabase należy wyłączyć opcję "Enable email confirmation", 
+    // W panelu Supabase należy wyłączyć opcję "Enable email confirmation",
     // aby użytkownik był od razu zalogowany po rejestracji.
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -31,7 +31,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         headers: { "Content-Type": "application/json" },
       });
     }
-    
+
     // Zgodnie z PRD (US-001), użytkownik jest automatycznie logowany po rejestracji.
     // Supabase signUp domyślnie loguje użytkownika i ustawia sesję.
 
