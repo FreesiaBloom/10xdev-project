@@ -1,7 +1,8 @@
 import { z } from "zod";
 import type { APIRoute } from "astro";
-import { FlashcardService, DatabaseError } from "@/lib/services/flashcards-service";
+import { FlashcardService } from "@/lib/services/flashcards-service";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
+import { DatabaseError } from "@/lib/errors";
 
 export const prerender = false;
 

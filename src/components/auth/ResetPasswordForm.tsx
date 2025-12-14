@@ -13,7 +13,6 @@ export default function ResetPasswordForm() {
     setIsLoading(true);
     setError(null);
     setMessage(null);
-    console.log("Formularz resetowania hasła wysłany");
     setTimeout(() => {
       setIsLoading(false);
       setMessage("Twoje hasło zostało zmienione. Możesz się teraz zalogować.");
