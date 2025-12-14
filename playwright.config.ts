@@ -84,6 +84,7 @@ export default defineConfig({
       SUPABASE_URL: process.env.SUPABASE_URL || "http://localhost:54321",
       SUPABASE_PUBLIC_KEY: process.env.SUPABASE_PUBLIC_KEY || "test_key",
       OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "test_key",
+      NODE_ENV: "test", // Set test mode for middleware
     },
   },
 });

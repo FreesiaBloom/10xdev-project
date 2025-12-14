@@ -21,10 +21,10 @@ export class GenerationFormPage extends BasePage {
     super(page);
 
     // Initialize locators using data-testid attributes
-    this.sourceTextArea = this.getByTestId("source-text-area");
-    this.characterCounter = this.getByTestId("character-counter");
-    this.submitButton = this.getByTestId("generate-button");
-    this.loadingSpinner = this.getByTestId("loading-spinner");
+    this.sourceTextArea = this.page.locator('[data-testid="source-text-area"]');
+    this.characterCounter = this.page.locator('[data-testid="character-counter"]');
+    this.submitButton = this.page.locator('[data-testid="generate-button"]');
+    this.loadingSpinner = this.page.locator('[data-testid="loading-spinner"]');
     this.toastContainer = this.page.locator("[data-sonner-toaster]");
   }
 
@@ -32,8 +32,10 @@ export class GenerationFormPage extends BasePage {
    * Navigate to the generation form page
    */
   async navigateToForm(): Promise<void> {
-    await this.goto("/");
+    await this.goto("/generate");
     await this.waitForPageLoad();
+    // Wait for React hydration to complete - astro-island with client="load"
+    await this.page.waitForSelector('[data-testid="source-text-area"]', { timeout: 20000 });
   }
 
   /**
