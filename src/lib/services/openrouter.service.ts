@@ -27,7 +27,7 @@ export class OpenRouterService {
 
   constructor() {
     this.apiKey = import.meta.env.OPENROUTER_API_KEY;
-    if (!this.apiKey) {
+    if (!this.apiKey && import.meta.env.MODE !== "test") {
       throw new ConfigurationError("OPENROUTER_API_KEY is not set in environment variables.");
     }
   }

@@ -76,5 +76,12 @@ export default defineConfig({
     command: "npm run dev",
     url: "http://127.0.0.1:4321",
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000, // 2 minutes timeout for CI
+    env: {
+      // Pass through environment variables needed for Astro to start
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_PUBLIC_KEY: process.env.SUPABASE_PUBLIC_KEY,
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+    },
   },
 });
