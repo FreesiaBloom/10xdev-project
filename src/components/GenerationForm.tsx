@@ -42,7 +42,10 @@ export default function GenerationForm() {
 
       sessionStorage.setItem(`generation-${result.generation_id}`, JSON.stringify(result.flashcards_proposals));
 
-      window.location.href = `/review/${result.generation_id}`;
+      // Add e2e parameter if we're in test mode
+      const isTestMode = window.location.search.includes('e2e=true');
+      const reviewUrl = `/review/${result.generation_id}${isTestMode ? '?e2e=true' : ''}`;
+      window.location.href = reviewUrl;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Wystąpił nieznany błąd. Spróbuj ponownie.");
     } finally {

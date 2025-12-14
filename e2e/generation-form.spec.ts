@@ -77,13 +77,36 @@ test.describe("Generation Form", () => {
       expect(isLoading).toBe(true);
     });
 
-    test("should navigate to review page on successful submission", async () => {
+    test("should navigate to review page on successful submission", async ({ page }) => {
       // Arrange
       const validText = generationFormPage.generateTestText(2000);
+
+      // Monitor API calls
+      let apiCalled = false;
+      await page.route("/api/generations", (route) => {
+        console.log("API called with:", route.request().postData());
+        apiCalled = true;
+        route.fulfill({
+          status: 201,
+          contentType: "application/json",
+          body: JSON.stringify({
+            generation_id: 123,
+            flashcards_proposals: [
+              { front: "Test Q1", back: "Test A1", source: "ai_generated" },
+              { front: "Test Q2", back: "Test A2", source: "ai_generated" }
+            ],
+            generated_count: 2
+          }),
+        });
+      });
 
       // Act
       await generationFormPage.fillAndSubmitForm(validText);
       await generationFormPage.waitForSubmissionComplete();
+
+      // Debug
+      console.log("API was called:", apiCalled);
+      console.log("Current URL after submission:", page.url());
 
       // Assert
       await generationFormPage.waitForNavigationToReview();
@@ -156,19 +179,8 @@ test.describe("Generation Form", () => {
         `,
       });
 
-      // Assert - be more tolerant on first run for CI
-      try {
-        await expect(page).toHaveScreenshot("generation-form-empty.png", {
-          threshold: 0.3,
-        });
-      } catch (error) {
-        // If snapshot doesn't exist on this platform, create it
-        if (error.message.includes("doesn't exist")) {
-          await expect(page).toHaveScreenshot("generation-form-empty.png");
-        } else {
-          throw error;
-        }
-      }
+      // Assert - use global threshold from playwright.config.ts
+      await expect(page).toHaveScreenshot("generation-form-empty.png");
     });
 
     test("should match visual snapshot of form with text", async ({ page }) => {
@@ -178,10 +190,8 @@ test.describe("Generation Form", () => {
       // Act
       await generationFormPage.enterSourceText(validText);
 
-      // Assert - allow platform differences
-      await expect(page).toHaveScreenshot("generation-form-with-text.png", {
-        threshold: 0.3,
-      });
+      // Assert - use global threshold from playwright.config.ts
+      await expect(page).toHaveScreenshot("generation-form-with-text.png");
     });
 
     test("should match visual snapshot of loading state", async ({ page }) => {
@@ -192,10 +202,8 @@ test.describe("Generation Form", () => {
       // Act
       await generationFormPage.submitForm();
 
-      // Assert - allow platform differences
-      await expect(page).toHaveScreenshot("generation-form-loading.png", {
-        threshold: 0.3,
-      });
+      // Assert - use global threshold from playwright.config.ts  
+      await expect(page).toHaveScreenshot("generation-form-loading.png");
     });
   });
 });
