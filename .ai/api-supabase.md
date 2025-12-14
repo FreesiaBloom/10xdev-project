@@ -23,12 +23,12 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../db/database.types.ts";
 
 const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+const supabaseAnonKey = import.meta.env.SUPABASE_PUBLIC_KEY;
 
 export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
 ```
 
-This file initializes the Supabase client using the environment variables `SUPABASE_URL` and `SUPABASE_KEY`.
+This file initializes the Supabase client using the environment variables `SUPABASE_URL` and `SUPABASE_PUBLIC_KEY`.
 
 ### 2. Middleware Setup
 
@@ -67,7 +67,7 @@ declare global {
 
 interface ImportMetaEnv {
   readonly SUPABASE_URL: string;
-  readonly SUPABASE_KEY: string;
+  readonly SUPABASE_PUBLIC_KEY: string;
 }
 
 interface ImportMeta {
