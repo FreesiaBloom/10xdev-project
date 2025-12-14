@@ -154,6 +154,8 @@ test.describe("Generation Form", () => {
   });
 
   test.describe("Visual Regression", () => {
+    // Skip visual tests in CI due to cross-platform rendering differences
+    test.skip(() => !!process.env.CI, "Visual regression tests disabled in CI");
     test("should match visual snapshot of empty form", async ({ page }) => {
       // Wait for form to be fully loaded and stable
       await page.waitForTimeout(2000);

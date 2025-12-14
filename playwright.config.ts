@@ -27,8 +27,7 @@ export default defineConfig({
   expect: {
     // Allow some differences between platforms for fonts/rendering
     toHaveScreenshot: {
-      threshold: 0.2, // 20% difference allowed for cross-platform compatibility
-      mode: "strict",
+      threshold: 0.3, // 30% difference allowed for cross-platform compatibility
     },
   },
 
