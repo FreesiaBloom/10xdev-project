@@ -72,3 +72,4 @@ This is a starter template and is actively maintained. The current version is `0
 Distributed under the MIT License. See `LICENSE` for more information.
 
 testuje pr na githubie
+Trigger workflow test
