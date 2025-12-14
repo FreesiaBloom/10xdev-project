@@ -83,6 +83,8 @@ jobs:
           echo "SUPABASE_URL is set: ${{ secrets.SUPABASE_URL != '' }}"
           echo "SUPABASE_PUBLIC_KEY is set: ${{ secrets.SUPABASE_PUBLIC_KEY != '' }}"
           echo "OPENROUTER_API_KEY is set: ${{ secrets.OPENROUTER_API_KEY != '' }}"
+          echo "NODE_ENV: $NODE_ENV"
+          echo "CI: $CI"
 
       - name: Run E2E tests
         run: npm run test:e2e
@@ -90,6 +92,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'http://localhost:54321' }}
           SUPABASE_PUBLIC_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY || 'test_key' }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'test_key' }}
+          NODE_ENV: test
           CI: true
 
       - name: Upload E2E test results

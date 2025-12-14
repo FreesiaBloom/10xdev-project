@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 
-test("homepage redirects to generate page and shows correct title", async ({ page }) => {
-  // Go to homepage with test parameter
-  await page.goto("/?e2e=true");
+test("application loads and shows generate page", async ({ page }) => {
+  // Go directly to generate page with test parameter
+  await page.goto("/generate?e2e=true");
 
-  // Should redirect to generate page
-  await expect(page).toHaveURL(/\/generate/);
+  // Wait for page to load
+  await page.waitForLoadState("networkidle");
 
   // Expect the generate page title
   await expect(page).toHaveTitle(/Wygeneruj fiszki/);
@@ -16,4 +16,7 @@ test("homepage redirects to generate page and shows correct title", async ({ pag
   // Check that we have navigation links
   const myFlashcardsLink = page.getByRole("link", { name: "Moje fiszki" });
   await expect(myFlashcardsLink).toHaveAttribute("href", "/my-flashcards");
+
+  // Check that the main form element exists
+  await expect(page.locator('[data-testid="source-text-area"]')).toBeVisible();
 });

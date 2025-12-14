@@ -15,7 +15,12 @@ export abstract class BasePage {
    * Navigate to a specific URL
    */
   async goto(url: string): Promise<void> {
-    await this.page.goto(url);
+    // Add e2e parameter if not already present
+    const urlObj = new URL(url, 'http://localhost:4321');
+    if (!urlObj.searchParams.has('e2e')) {
+      urlObj.searchParams.set('e2e', 'true');
+    }
+    await this.page.goto(urlObj.pathname + urlObj.search);
   }
 
   /**
