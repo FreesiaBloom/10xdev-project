@@ -29,6 +29,10 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+
+    /* Add Playwright to user agent for test mode detection */
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Playwright",
   },
 
   /* Configure projects for major browsers */
@@ -75,7 +79,7 @@ export default defineConfig({
   webServer: {
     command: "npm run dev",
     url: "http://127.0.0.1:4321",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !process.env.CI, // Allow reuse in development
     timeout: 120 * 1000, // 2 minutes timeout for CI
     stderr: "pipe", // Capture stderr for debugging
     stdout: "pipe", // Capture stdout for debugging

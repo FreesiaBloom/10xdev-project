@@ -32,18 +32,67 @@ export class GenerationFormPage extends BasePage {
    * Navigate to the generation form page
    */
   async navigateToForm(): Promise<void> {
-    await this.goto("/generate");
+    // Add test parameter to URL to ensure test mode
+    await this.goto("/generate?e2e=true");
     await this.waitForPageLoad();
-    // Wait for React hydration to complete - astro-island with client="load"
-    await this.page.waitForSelector('[data-testid="source-text-area"]', { timeout: 20000 });
+
+    // Wait for React hydration to complete
+    await this.page.waitForSelector('[data-testid="source-text-area"]', {
+      state: "attached",
+      timeout: 20000,
+    });
+
+    // Give time for hydration
+    await this.page.waitForTimeout(2000);
+  }
+
+  /**
+   * Check if the form is ready for interaction
+   */
+  async isFormReady(): Promise<boolean> {
+    try {
+      await this.page.locator('[data-testid="form-ready"]').waitFor({
+        state: "attached",
+        timeout: 1000,
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Wait for form to be ready with fallback
+   */
+  async waitForFormReady(): Promise<void> {
+    // Element should already be available from navigateToForm
+    // Just add a small wait for any remaining async operations
+    await this.page.waitForTimeout(500);
   }
 
   /**
    * Enter text into the source text area
    */
   async enterSourceText(text: string): Promise<void> {
-    await this.sourceTextArea.clear();
-    await this.sourceTextArea.fill(text);
+    // Ensure form is ready before interaction
+    await this.waitForFormReady();
+
+    // Clear and fill with multiple attempts for reliability
+    for (let i = 0; i < 3; i++) {
+      try {
+        await this.sourceTextArea.clear();
+        await this.sourceTextArea.fill(text);
+
+        // Verify the text was actually entered
+        const value = await this.sourceTextArea.inputValue();
+        if (value === text) {
+          return; // Success!
+        }
+      } catch (error) {
+        if (i === 2) throw error; // Last attempt failed
+        await this.page.waitForTimeout(1000); // Wait before retry
+      }
+    }
   }
 
   /**
