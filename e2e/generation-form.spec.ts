@@ -101,7 +101,6 @@ test.describe("Generation Form", () => {
       await generationFormPage.fillAndSubmitForm(validText);
       await generationFormPage.waitForSubmissionComplete();
 
-
       // Assert
       await generationFormPage.waitForNavigationToReview();
       expect(generationFormPage.getCurrentUrl()).toMatch(/\/review\/\d+/);
