@@ -2,7 +2,6 @@ import { type SupabaseClient } from "@/db/supabase.client";
 import type { CreateFlashcardDto, FlashcardEntity, ListFlashcardsResponseDto, UpdateFlashcardCommand } from "@/types";
 import { DatabaseError, RecordNotFoundError } from "@/lib/errors";
 
-
 interface ListFlashcardsOptions {
   page: number;
   limit: number;
