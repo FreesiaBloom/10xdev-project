@@ -11,7 +11,6 @@ export default function ForgotPasswordForm() {
     event.preventDefault();
     setIsLoading(true);
     setMessage(null);
-    console.log("Formularz odzyskiwania hasła wysłany");
     setTimeout(() => {
       setIsLoading(false);
       setMessage("Jeśli konto o podanym adresie e-mail istnieje, wysłaliśmy na nie link do resetowania hasła.");

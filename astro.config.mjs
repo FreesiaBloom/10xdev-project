@@ -10,7 +10,7 @@ import node from "@astrojs/node";
 export default defineConfig({
   output: "server",
   integrations: [react(), sitemap()],
-  // server: { port: 3000 }, // Use default port 4321
+  server: { port: 4321, host: true }, // Force port 4321 for consistency
   vite: {
     plugins: [tailwindcss()],
   },

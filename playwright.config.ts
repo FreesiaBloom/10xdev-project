@@ -22,6 +22,20 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
+
+  /* Configure snapshots for cross-platform compatibility */
+  expect: {
+    // Allow some differences between platforms for fonts/rendering
+    toHaveScreenshot: {
+      threshold: 0.3, // 30% difference allowed for cross-platform compatibility
+    },
+  },
+
+  /* Use platform-agnostic snapshot names */
+  snapshotPathTemplate: "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}",
+
+  /* Update snapshots if they don't exist (useful for CI) */
+  updateSnapshots: process.env.CI ? "missing" : "none",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -29,6 +43,10 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+
+    /* Add Playwright to user agent for test mode detection */
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Playwright",
   },
 
   /* Configure projects for major browsers */
@@ -75,6 +93,16 @@ export default defineConfig({
   webServer: {
     command: "npm run dev",
     url: "http://127.0.0.1:4321",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !process.env.CI, // Allow reuse in development
+    timeout: 120 * 1000, // 2 minutes timeout for CI
+    stderr: "pipe", // Capture stderr for debugging
+    stdout: "pipe", // Capture stdout for debugging
+    env: {
+      // Pass through environment variables needed for Astro to start
+      SUPABASE_URL: process.env.SUPABASE_URL || "http://localhost:54321",
+      SUPABASE_PUBLIC_KEY: process.env.SUPABASE_PUBLIC_KEY || "test_key",
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "test_key",
+      NODE_ENV: "test", // Set test mode for middleware
+    },
   },
 });

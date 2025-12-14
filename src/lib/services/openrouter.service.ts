@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import {
@@ -26,7 +27,7 @@ export class OpenRouterService {
 
   constructor() {
     this.apiKey = import.meta.env.OPENROUTER_API_KEY;
-    if (!this.apiKey) {
+    if (!this.apiKey && import.meta.env.MODE !== "test") {
       throw new ConfigurationError("OPENROUTER_API_KEY is not set in environment variables.");
     }
   }
@@ -95,7 +96,9 @@ export class OpenRouterService {
     } catch (error) {
       if (error instanceof ApiError) throw error;
       // Złap błędy sieciowe (np. `fetch` failed)
-      throw new NetworkError(`Network request to OpenRouter API failed: ${error.message}`);
+      throw new NetworkError(
+        `Network request to OpenRouter API failed: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -116,7 +119,7 @@ export class OpenRouterService {
       const errorMessage =
         error instanceof z.ZodError
           ? `Schema validation failed: ${error.errors.map((e) => e.message).join(", ")}`
-          : `Failed to parse or validate response: ${error.message}`;
+          : `Failed to parse or validate response: ${error instanceof Error ? error.message : "Unknown error"}`;
 
       throw new SchemaValidationError(errorMessage);
     }

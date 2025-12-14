@@ -65,8 +65,6 @@ export class GenerationService {
         userId
       );
 
-      console.log("generationId", generationId);
-
       const persistedProposals: GeneratedFlashcardProposalDto[] = flashcardsProposals.map((p) => ({
         ...p,
         source: "ai_generated",

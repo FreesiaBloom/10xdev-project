@@ -1,4 +1,4 @@
-import { type SupabaseClient } from "@/db/supabase.client";
+import { type SupabaseClient } from "@supabase/supabase-js";
 import type { CreateFlashcardDto, FlashcardEntity, ListFlashcardsResponseDto, UpdateFlashcardCommand } from "@/types";
 import { DatabaseError, RecordNotFoundError } from "@/lib/errors";
 
@@ -68,8 +68,6 @@ export class FlashcardService {
       user_id: userId,
       next_review_at: new Date().toISOString(),
     }));
-
-    console.log(userId, flashcards, flashcardsToInsert);
     const { data, error } = await this.supabase.from("flashcards").insert(flashcardsToInsert).select();
 
     if (error) {

@@ -16,8 +16,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 
 const MyFlashcardsView = () => {
-  const { flashcardsData, isLoading, error, currentPage, setCurrentPage, updateFlashcard, deleteFlashcard } =
-    useFlashcards();
+  const { flashcardsData, isLoading, currentPage, setCurrentPage, updateFlashcard, deleteFlashcard } = useFlashcards();
 
   const [deletingFlashcard, setDeletingFlashcard] = useState<FlashcardDto | null>(null);
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 interface FlashcardListProps {
   flashcards: FlashcardDto[];
   isLoading: boolean;
-  onEdit: (id: number, data: UpdateFlashcardCommand) => void;
+  onEdit: (id: string, data: UpdateFlashcardCommand) => void;
   onDeleteRequest: (flashcard: FlashcardDto) => void;
 }
 

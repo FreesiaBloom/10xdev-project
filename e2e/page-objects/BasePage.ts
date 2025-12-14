@@ -1,4 +1,5 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import type { Page, Locator } from "@playwright/test";
 
 /**
  * Base Page Object Model class providing common functionality
@@ -15,7 +16,12 @@ export abstract class BasePage {
    * Navigate to a specific URL
    */
   async goto(url: string): Promise<void> {
-    await this.page.goto(url);
+    // Add e2e parameter if not already present
+    const urlObj = new URL(url, "http://localhost:4321");
+    if (!urlObj.searchParams.has("e2e")) {
+      urlObj.searchParams.set("e2e", "true");
+    }
+    await this.page.goto(urlObj.pathname + urlObj.search);
   }
 
   /**
@@ -35,7 +41,7 @@ export abstract class BasePage {
   /**
    * Get element by role
    */
-  getByRole(role: string, options?: { name?: string }): Locator {
+  getByRole(role: Parameters<Page["getByRole"]>[0], options?: { name?: string }): Locator {
     return this.page.getByRole(role, options);
   }
 
@@ -85,6 +91,10 @@ export abstract class BasePage {
    * Take screenshot
    */
   async takeScreenshot(name?: string): Promise<void> {
-    await expect(this.page).toHaveScreenshot(name);
+    if (name) {
+      await expect(this.page).toHaveScreenshot(name);
+    } else {
+      await expect(this.page).toHaveScreenshot();
+    }
   }
 }

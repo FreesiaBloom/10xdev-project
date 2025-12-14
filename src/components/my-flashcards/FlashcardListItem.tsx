@@ -7,7 +7,7 @@ import { useState } from "react";
 
 interface FlashcardListItemProps {
   flashcard: FlashcardDto;
-  onUpdate: (id: number, data: UpdateFlashcardCommand) => void;
+  onUpdate: (id: string, data: UpdateFlashcardCommand) => void;
   onDelete: () => void;
 }
 

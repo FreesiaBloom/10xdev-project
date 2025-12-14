@@ -33,7 +33,7 @@ export const useFlashcards = () => {
     fetchFlashcards(currentPage);
   }, [currentPage, fetchFlashcards]);
 
-  const updateFlashcard = async (id: number, data: UpdateFlashcardCommand) => {
+  const updateFlashcard = async (id: string, data: UpdateFlashcardCommand) => {
     const previousData = flashcardsData;
     setError(null); // Clear previous errors
 
@@ -75,7 +75,7 @@ export const useFlashcards = () => {
     }
   };
 
-  const deleteFlashcard = async (id: number) => {
+  const deleteFlashcard = async (id: string) => {
     const previousData = flashcardsData;
     setError(null); // Clear previous errors
 

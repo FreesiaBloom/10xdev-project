@@ -8,4 +8,3 @@ describe("Example Component", () => {
     expect(screen.getByText("Hello Vitest!")).toBeInTheDocument();
   });
 });
-
