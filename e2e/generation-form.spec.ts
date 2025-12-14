@@ -139,6 +139,9 @@ test.describe("Generation Form", () => {
 
   test.describe("Visual Regression", () => {
     test("should match visual snapshot of empty form", async ({ page }) => {
+      // Wait for form to be fully loaded
+      await page.waitForTimeout(1000);
+
       // Assert
       await expect(page).toHaveScreenshot("generation-form-empty.png");
     });

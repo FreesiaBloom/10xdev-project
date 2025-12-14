@@ -13,18 +13,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const isTestMode = process.env.NODE_ENV === "test" || hasTestParam || hasE2eParam || hasPlaywrightUA;
 
-  // Debug log to see what's happening
-  if (hasE2eParam || hasTestParam || hasPlaywrightUA) {
-    console.log("Test detection:", {
-      url: url.pathname + url.search,
-      hasE2eParam,
-      hasTestParam,
-      hasPlaywrightUA,
-      isTestMode,
-      userAgent: userAgent.substring(0, 100),
-    });
-  }
-
   if (isTestMode) {
     // Create a mock session for tests
     context.locals.session = {

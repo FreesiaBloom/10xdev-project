@@ -78,7 +78,8 @@ export default function GenerationForm() {
           disabled={!isValid || isLoading}
           className="w-full max-w-xs"
         >
-          {isLoading ? <span data-testid="loading-spinner">Loading...</span> : "Generuj fiszki"}
+          {isLoading && <span data-testid="loading-spinner">Loading...</span>}
+          {!isLoading && "Generuj fiszki"}
         </Button>
       </form>
     </>
