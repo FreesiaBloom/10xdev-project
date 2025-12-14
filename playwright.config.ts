@@ -28,12 +28,12 @@ export default defineConfig({
     // Allow some differences between platforms for fonts/rendering
     toHaveScreenshot: {
       threshold: 0.2, // 20% difference allowed for cross-platform compatibility
-      mode: 'strict',
+      mode: "strict",
     },
   },
 
   /* Use platform-agnostic snapshot names */
-  snapshotPathTemplate: '{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}',
+  snapshotPathTemplate: "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}",
 
   /* Update snapshots if they don't exist (useful for CI) */
   updateSnapshots: process.env.CI ? "missing" : "none",
