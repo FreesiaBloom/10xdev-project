@@ -1,4 +1,5 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import type { Page, Locator } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 /**
@@ -159,9 +160,9 @@ export class GenerationFormPage extends BasePage {
       await this.loadingSpinner.waitFor({ state: "visible", timeout: 2000 });
       // Wait for loading to finish
       await this.loadingSpinner.waitFor({ state: "hidden" });
-    } catch (error) {
+    } catch {
       // If loading spinner never appears, that's OK for error cases
-      console.log("Loading spinner not found - submission may have failed immediately");
+      // This can happen when API requests fail immediately
     }
   }
 
@@ -193,14 +194,8 @@ export class GenerationFormPage extends BasePage {
    * Wait for navigation to review page
    */
   async waitForNavigationToReview(): Promise<void> {
-    // Debug current URL
-    console.log("Current URL before waiting:", this.page.url());
-    
     // Wait for navigation with longer timeout
     await this.page.waitForURL(/\/review\/\d+/, { timeout: 15000 });
-    
-    // Debug final URL
-    console.log("Final URL after navigation:", this.page.url());
   }
 
   /**

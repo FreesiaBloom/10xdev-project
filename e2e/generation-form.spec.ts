@@ -81,11 +81,8 @@ test.describe("Generation Form", () => {
       // Arrange
       const validText = generationFormPage.generateTestText(2000);
 
-      // Monitor API calls
-      let apiCalled = false;
+      // Mock API response
       await page.route("/api/generations", (route) => {
-        console.log("API called with:", route.request().postData());
-        apiCalled = true;
         route.fulfill({
           status: 201,
           contentType: "application/json",
@@ -93,9 +90,9 @@ test.describe("Generation Form", () => {
             generation_id: 123,
             flashcards_proposals: [
               { front: "Test Q1", back: "Test A1", source: "ai_generated" },
-              { front: "Test Q2", back: "Test A2", source: "ai_generated" }
+              { front: "Test Q2", back: "Test A2", source: "ai_generated" },
             ],
-            generated_count: 2
+            generated_count: 2,
           }),
         });
       });
@@ -104,9 +101,6 @@ test.describe("Generation Form", () => {
       await generationFormPage.fillAndSubmitForm(validText);
       await generationFormPage.waitForSubmissionComplete();
 
-      // Debug
-      console.log("API was called:", apiCalled);
-      console.log("Current URL after submission:", page.url());
 
       // Assert
       await generationFormPage.waitForNavigationToReview();
@@ -202,7 +196,7 @@ test.describe("Generation Form", () => {
       // Act
       await generationFormPage.submitForm();
 
-      // Assert - use global threshold from playwright.config.ts  
+      // Assert - use global threshold from playwright.config.ts
       await expect(page).toHaveScreenshot("generation-form-loading.png");
     });
   });

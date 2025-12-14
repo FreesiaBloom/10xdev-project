@@ -22,17 +22,17 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
-  
+
   /* Configure snapshots for cross-platform compatibility */
   expect: {
     // Allow some differences between platforms for fonts/rendering
-    toHaveScreenshot: { 
+    toHaveScreenshot: {
       threshold: 0.05, // 5% difference allowed (0.03 was failing)
     },
   },
-  
+
   /* Update snapshots if they don't exist (useful for CI) */
-  updateSnapshots: process.env.CI ? 'missing' : 'none',
+  updateSnapshots: process.env.CI ? "missing" : "none",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
