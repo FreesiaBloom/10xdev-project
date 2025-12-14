@@ -77,11 +77,13 @@ export default defineConfig({
     url: "http://127.0.0.1:4321",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000, // 2 minutes timeout for CI
+    stderr: "pipe", // Capture stderr for debugging
+    stdout: "pipe", // Capture stdout for debugging
     env: {
       // Pass through environment variables needed for Astro to start
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_PUBLIC_KEY: process.env.SUPABASE_PUBLIC_KEY,
-      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+      SUPABASE_URL: process.env.SUPABASE_URL || "http://localhost:54321",
+      SUPABASE_PUBLIC_KEY: process.env.SUPABASE_PUBLIC_KEY || "test_key",
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "test_key",
     },
   },
 });
