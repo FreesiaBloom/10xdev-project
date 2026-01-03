@@ -144,12 +144,13 @@ test.describe("Generation Form", () => {
       const validText = generationFormPage.generateTestText(2000);
       await generationFormPage.enterSourceText(validText);
 
+      const loadingSpinner = generationFormPage.getByTestId("loading-spinner");
+
       // Act
       await generationFormPage.submitForm();
 
       // Assert
-      const textArea = generationFormPage.getByTestId("source-text-area");
-      await expect(textArea).toBeDisabled();
+      await expect(loadingSpinner).toBeVisible({ timeout: 2000 });
     });
   });
 

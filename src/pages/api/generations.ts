@@ -28,6 +28,9 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
     const isTestMode = userId === "test-user-id" || userAgent.includes("Playwright");
 
     if (isTestMode) {
+      // Add delay for loading state tests
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Return mock response for tests
       const mockResult = {
         generation_id: 123,

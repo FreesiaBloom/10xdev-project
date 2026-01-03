@@ -293,3 +293,5 @@ jest.mock('@/components/ui/button', () => ({
 - **Maintain tests** - update when business logic changes
 - **Integration tests** are better for full user flows
 
+
+
